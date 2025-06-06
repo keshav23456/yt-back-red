@@ -17,7 +17,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 
 const router = Router()
-
+//file leno hai
 router.route("/register").post(
     upload.fields([
         {
