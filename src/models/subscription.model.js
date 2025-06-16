@@ -1,19 +1,14 @@
-import { Router } from 'express';
-import {
-    getSubscribedChannels,
-    getUserChannelSubscribers,
-    toggleSubscription,
-} from "../controllers/subscription.controller.js"
-import {verifyJWT} from "../middlewares/auth.middleware.js"
+import mongoose, {Schema} from "mongoose";
 
-const router = Router();
-router.use(verifyJWT); // Apply verifyJWT middleware to all routes in this file
+const subscriptionSchema = new Schema({
+    subscriber: {
+        type: Schema.Types.ObjectId, // one who is subscribing
+        ref: "User"
+    },
+    channel: {
+        type: Schema.Types.ObjectId, // one to whom 'subscriber' is subscribing
+        ref: "User"
+    }
+}, {timestamps: true})
 
-router
-    .route("/c/:channelId")
-    .get(getUserChannelSubscribers)
-    .post(toggleSubscription);
-
-router.route("/u/:subscriberId").get(getSubscribedChannels);
-
-export default router
+export const Subscription = mongoose.model("Subscription", subscriptionSchema)

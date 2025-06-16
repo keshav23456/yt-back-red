@@ -4,9 +4,24 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
+// Updated CORS configuration
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true
+    origin: [
+        process.env.CORS_ORIGIN || "http://localhost:5173",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000", // In case you use port 3000 later
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'Cookie',
+        'X-Requested-With',
+        'Accept',
+        'Origin'
+    ]
 }))
 
 app.use(express.json({limit: "16kb"}))
@@ -14,6 +29,11 @@ app.use(express.urlencoded({extended: true, limit: "16kb"}))
 app.use(express.static("public"))
 app.use(cookieParser())
 
+// Add this middleware for debugging CORS issues
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} from origin: ${req.get('origin')}`);
+    next();
+});
 
 //routes import
 import userRouter from './routes/user.routes.js'
@@ -36,7 +56,5 @@ app.use("/api/v1/comments", commentRouter)
 app.use("/api/v1/likes", likeRouter)
 app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
-
-// http://localhost:8000/api/v1/users/register
 
 export { app }
